@@ -6,6 +6,8 @@
  * sign in or out (always the Hub's). Pages other than the Shelf get a small way home in
  * the top left, and a Tool's pages its name beside it. Textile finish, lol skin; light
  * or dark from the device, or the choice saved in the menu (Liquid Textile's `lt-theme`).
+ * Its forms keep your place: a post neither loses what was typed nor jumps to the top
+ * (`forms.ts`, with `formRedirect` in the guard on the server).
  *
  * The page imports its own stylesheet, which imports `@swavely-lol/kit/styles/shell.css`.
  */
@@ -97,6 +99,9 @@ const at = (path: string) => hub + path;
     </div>
     <script>
       import { menu } from '../styles/liquid-textile/behaviors.js';
+      import { enhanceForms } from './forms';
+
+      enhanceForms();
 
       const root = document.documentElement;
       const themeItem = document.querySelector<HTMLButtonElement>('[data-action="theme"]')!;

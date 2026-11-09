@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from 'astro';
 import { SESSION_COOKIE, type HubApiContract, type Viewer } from './contract';
 import { getEnv, hubUrl, u, type BaseEnv } from './env';
+import { FORM_HEADER, LOCATION_HEADER } from './forms';
 
 /**
  * The locks every page on swavely.lol shares, and the middleware a Tool runs
@@ -42,6 +43,20 @@ export function setHeaders(res: Response, pathname: string, opts: { indexed?: bo
   return res;
 }
 
+/**
+ * The server's half of the Shell's forms (`forms.ts`): to a post sent by `fetch`, a
+ * redirect comes back as a 204 naming where it went in `X-Lol-Location`, cookies kept,
+ * so the page can stay put when it went back to itself. Anything else is untouched.
+ */
+export function formRedirect(request: Request, res: Response): Response {
+  const to = res.headers.get('Location');
+  if (!request.headers.has(FORM_HEADER) || !to || res.status < 300 || res.status >= 400) return res;
+  const headers = new Headers(res.headers);
+  headers.delete('Location');
+  headers.set(LOCATION_HEADER, to);
+  return new Response(null, { status: 204, headers });
+}
+
 export interface ToolEnvBase extends BaseEnv {
   HUB: HubApiContract;
   HUB_ORIGIN?: string;
@@ -53,6 +68,7 @@ export interface ToolEnvBase extends BaseEnv {
  * value to `HUB.whoIs` and keeps nothing of it. `locals.viewer` is set whenever someone
  * is signed in. Where `needsPerson(pathname)` is true and nobody is, it is off to the
  * Hub's sign-in, which sends them back. `/healthz` and built assets are always open.
+ * Redirects to the Shell's forms go through `formRedirect`.
  *
  * `pathname` is the full path, base included (`/move/l/abc`); compare with `u()`.
  */
@@ -70,11 +86,11 @@ export function toolGuard(opts: { needsPerson: (pathname: string) => boolean }):
       const viewer: Viewer | null = id ? await env.HUB.whoIs(id) : null;
       if (viewer) (ctx.locals as { viewer?: Viewer }).viewer = viewer;
       else if (opts.needsPerson(pathname)) {
-        return ctx.redirect(hubUrl(env, `/login?next=${encodeURIComponent(pathname + ctx.url.search)}`), 302);
+        return formRedirect(ctx.request, ctx.redirect(hubUrl(env, `/login?next=${encodeURIComponent(pathname + ctx.url.search)}`), 302));
       }
     }
 
-    const res = await next();
+    const res = formRedirect(ctx.request, await next());
     return setHeaders(res, pathname);
   };
 }
