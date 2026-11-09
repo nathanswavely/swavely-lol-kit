@@ -1,0 +1,27 @@
+{
+  "name": "@swavely-lol/kit",
+  "version": "0.1.0",
+  "description": "What the swavely.lol Hub and every Tool share: the HubApi contract, the shell, the guard, the env helpers and Liquid Textile (swavely-lol ADR-0004).",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "repository": "github:nathanswavely/swavely-lol-kit",
+  "files": [
+    "src",
+    "styles",
+    "migrations"
+  ],
+  "exports": {
+    "./contract": "./src/contract.ts",
+    "./env": "./src/env.ts",
+    "./dev-latency": "./src/dev-latency.ts",
+    "./guard": "./src/guard.ts",
+    "./removals": "./src/removals.ts",
+    "./Shell.astro": "./src/Shell.astro",
+    "./styles/*": "./styles/*",
+    "./migrations/*": "./migrations/*"
+  },
+  "peerDependencies": {
+    "astro": "7.3.8"
+  }
+}

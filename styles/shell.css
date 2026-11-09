@@ -1,0 +1,53 @@
+/* The look of every page on swavely.lol (swavely-lol ADR-0001, ADR-0004): Liquid
+   Textile, vendored (liquid-textile/VENDORED.md), on the textile finish with the lol
+   skin, light and dark, and the shell around every page (src/Shell.astro).
+
+   An app's own stylesheet imports this first, then its fonts (the foundation's faces,
+   self-hosted so a visitor never contacts a font CDN; each app depends on the three
+   @fontsource packages itself):
+
+     @import '@swavely-lol/kit/styles/shell.css';
+     @import '@fontsource-variable/space-grotesk/index.css';
+     @import '@fontsource-variable/shantell-sans/index.css';
+     @import '@fontsource/space-mono/400.css';
+
+   The skin comes after index.css so its tokens win; base.css gives bare elements the
+   look. Components come from the library and are not restyled here. */
+@import './liquid-textile/index.css';
+@import './liquid-textile/skins/lol.css';
+@import './liquid-textile/base.css';
+
+body { background: var(--lt-color-bg); }
+
+.shell { min-height: 100dvh; display: flex; flex-direction: column; }
+.shell > main { flex: 1 0 auto; width: 100%; max-width: 760px; margin: 0 auto; padding: 3.5rem var(--lt-gutter) 3rem; }
+.shell > main.wide { max-width: 1080px; }
+
+/* No bar: a settings cog fixed in the top right of every page, and on pages other than
+   the Shelf a small way home in the top left, with a Tool's name beside it. */
+.settings { position: fixed; top: 0.6rem; right: 0.75rem; z-index: var(--lt-z-chrome, 20); }
+.settings #settings-menu { min-width: 13rem; margin-top: 0.3rem; }
+.home-link {
+  position: absolute;
+  top: 0.9rem;
+  left: var(--lt-gutter);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--lt-font-display);
+  font-weight: 700;
+}
+.home-link a { color: var(--lt-color-text); text-decoration: none; }
+.home-mark { display: inline-flex; align-items: center; gap: 0.45rem; }
+.home-mark img { display: block; }
+.home-link .home-tool { color: var(--lt-color-text-muted); font-weight: 500; }
+
+/* Type and small layout helpers every app uses. */
+h1.page { margin: 0 0 0.25rem; font-family: var(--lt-font-display); font-size: 1.7rem; letter-spacing: -0.01em; }
+.page-lead { margin: 0 0 var(--lt-stack); color: var(--lt-color-text-muted); }
+h2.section { margin: var(--lt-stack) 0 0.6rem; font-family: var(--lt-font-display); font-size: 1.2rem; }
+.stack > * + * { margin-top: var(--lt-gap); }
+.small { font-size: var(--lt-text-sm); }
+.fine { font-size: var(--lt-text-xs); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.9rem; }
+.crumbs { margin: 0 0 0.75rem; font-size: var(--lt-text-sm); }
